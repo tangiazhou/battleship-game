@@ -6,9 +6,8 @@
 #define BOARDROWS 9
 #define BOARDCOLS 11
 
-bool dumpComputer = false; //causes dump of computer board before game if true (for debugging)
+bool dumpComputer = false; 
 
-// boards. 0 means empty, non-zero means ship is there, number is size, positive means hit on a ship
 int playerBoard[BOARDROWS+1][BOARDCOLS+1];
 int computerBoard[BOARDROWS+1][BOARDCOLS+1];
 int compShotBoard[BOARDROWS+1][BOARDCOLS+1];
@@ -26,88 +25,88 @@ int getShot(bool fromUser, int board[BOARDROWS+1][BOARDCOLS+1]){
             scanf("%d%d",&row,&col);
             if(col<1 || col > BOARDCOLS || row < 1 || row > BOARDROWS)
                 printf("Invalid input\n");
-            else  //valid input
+            else  
                 break;
         }
-        else { //computer generated
+        else { 
             row=getRand(1,BOARDROWS);
             col=getRand(1,BOARDCOLS);
-            if(compShotBoard[row][col]==0) { //make sure haven't shot here before
-                compShotBoard[row][col]=1; //valid shot
+            if(compShotBoard[row][col]==0) { 
+                compShotBoard[row][col]=1; 
                 break;
             }
         }
-    } //will leave this loop with valid input
+    } 
     
     if(board[row][col] != 0){
         if(board[row][col]>0)
-            board[row][col]= -1*board[row][col]; //make sure is negative
-        return -1*board[row][col]; //a hit!
+            board[row][col]= -1*board[row][col]; 
+        return -1*board[row][col]; 
     }
-    return 0; //miss
+    return 0; 
 }
             
 bool allShipsNotHit(int board[BOARDROWS+1][BOARDCOLS+1]){
     for(int i=1;i<=BOARDROWS;i++){
         for(int j=1;j<=BOARDCOLS;j++){
-            if(board[i][j]>0) //ship and not hit
+            if(board[i][j]>0) 
                 return(true);
         }
     }
-    return(false); // No ships found not all hit
+    return(false); 
 }
 
 bool noneLeft(int valueToFind,int board[BOARDROWS+1][BOARDCOLS+1]){
     for(int i=1;i<=BOARDROWS;i++){
         for(int j=1;j<=BOARDCOLS;j++){
-            if(board[i][j]==valueToFind) // Ship and not hit
+            if(board[i][j]==valueToFind) 
                 return(false);
         }
     }
-    return(true); //no ships found, all hit
+    return(true); 
 }
 
 bool validInput(int row, int column, int orientation, int size) { 
     if(row < 1 || row > BOARDROWS || column < 1 || column > BOARDCOLS || orientation < 0 || orientation > 1) {
-        return(false); // User input numbers are not valid
+        return(false); 
     }
     else if(orientation == 0) {
-        if(column-1+size > BOARDCOLS) { // Falls off the board
+        if(column-1+size > BOARDCOLS) { 
             return(false);
         }
     }
     else if(orientation == 1) {
-        if(row-1+size > BOARDROWS) { // Falls off the board
+        if(row-1+size > BOARDROWS) { 
             return(false);
         }
     }
-    return(true); // Returns boolean type
+    return(true); 
 }
 
-void getBoardParameters(bool getUserInput, int size, int boardParameters[]) { // Give the size and returns 3 values
+void getBoardParameters(bool getUserInput, int size, int boardParameters[]) {
     int row; 
     int column;
     int orientation;
     bool valid;
   
     do {
-        if(getUserInput == true) { // User will manually place their ships
+        if(getUserInput == true) { 
           printf("Give starting row, starting column and orientation (3 inputs) for ship of size=%d:", size);
           scanf("%d %d %d", &row, &column, &orientation); 
         } 
         else {
-          row = getRand(1,9); // Calling the getRand function
+          row = getRand(1,9); 
           column = getRand(1,11);
           orientation = getRand(0,1);
         }
-        valid = validInput(row, column, orientation, size); // Validating user input
+        valid = validInput(row, column, orientation, size);
         
-        if(valid == false && getUserInput == true) { // Only prints when it asks the user to get input
+        if(valid == false && getUserInput == true) {
               printf("Invalid Input\n");
         }
-    } while(valid == false); // Continues to loop when the input is not valid   
+    } while(valid == false);   
 
-    boardParameters[0] = row; // Assign row to the first boardParameters component 
+    boardParameters[0] = row;  
     boardParameters[1] = column; 
     boardParameters[2] = orientation; 
 }
@@ -120,29 +119,29 @@ void populateBoard(bool getUserInput, int board[BOARDROWS+1][BOARDCOLS+1]) {
     int orientation; 
     int size;
     int boardParameters[3];
-    int boardTemp[BOARDROWS+1][BOARDCOLS+1]={0}; // Used for determining conflict 
+    int boardTemp[BOARDROWS+1][BOARDCOLS+1]={0}; 
     int overlap;
     
-    if(getUserInput == true) { // User will manually place their ships
+    if(getUserInput == true) { 
         printf("Rows are 1 - 9, Columns are 1 - 11\n");
         printf("Orientation is 0 for across, 1 for down\n");
     }
-    for(size=5; size>0; size--) { // Ship size starts at 5 and ends at 1
+    for(size=5; size>0; size--) {
         do {
             overlap = 0; 
             
             for(i=1; i<=BOARDROWS; i++) {
                 for(j=1; j<=BOARDCOLS; j++) {
-                    boardTemp[i][j]=0; // Initialize boardTemp to 0
+                    boardTemp[i][j]=0; 
                 }  
             }         
-            getBoardParameters(getUserInput,size,boardParameters); // Obtain parameters either from user input or random generation 
+            getBoardParameters(getUserInput,size,boardParameters); 
             row = boardParameters[0];
             column= boardParameters[1];
             orientation= boardParameters[2]; 
             
-            if(orientation == 0) { // Horizontal orientation
-                for(i=0; i<size; i++) { // Populate the board and detect if conflicts occur
+            if(orientation == 0) { 
+                for(i=0; i<size; i++) { 
                     boardTemp[row][column+i]=size; 
                     overlap += board[row][column+i]; 
                 }
@@ -159,7 +158,7 @@ void populateBoard(bool getUserInput, int board[BOARDROWS+1][BOARDCOLS+1]) {
             
         } while(overlap != 0);    
         
-        for(i=1; i<=BOARDROWS; i++) { // Once it exits the loop, adds components of the board and boardTemp to board
+        for(i=1; i<=BOARDROWS; i++) { 
             for(j=1; j<=BOARDCOLS; j++) {
               board[i][j] += boardTemp[i][j];
             }  
@@ -187,10 +186,8 @@ int main(int argc, char **argv)
 {
     bool playerBoardOK,computerBoardOK;
     
-    // Initialize the seed randomly. 
      	srand(time(NULL)); 
 
-    // Initialize the boards
     for(int i=0;i<BOARDROWS;i++){
         for(int j=0;j<BOARDCOLS;j++){
             playerBoard[i][j]=0;
@@ -208,11 +205,10 @@ int main(int argc, char **argv)
         showBoard(computerBoard);
     }
 
-    // play starts here
     playerBoardOK=true;
     computerBoardOK=true;
     while(playerBoardOK && computerBoardOK){
-        int hit=getShot(true,computerBoard); //shot from user
+        int hit=getShot(true,computerBoard); 
         if(hit){
             printf("HIT on size %d\n",hit);
             if(noneLeft(hit,computerBoard))
@@ -230,8 +226,6 @@ int main(int argc, char **argv)
             printf("Computer miss!\n");
         playerBoardOK = allShipsNotHit(playerBoard);
         computerBoardOK = allShipsNotHit(computerBoard);
-//    showBoard(playerBoard); //debug
-//    showBoard(computerBoard); //debug
    }
    
    if(playerBoardOK)
