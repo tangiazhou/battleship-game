@@ -146,7 +146,7 @@ void populateBoard(bool getUserInput, int board[BOARDROWS+1][BOARDCOLS+1]) {
                     overlap += board[row][column+i]; 
                 }
             } 
-            else { // Vertical orientation
+            else { 
                 for(i=0; i<size; i++) {
                     boardTemp[row+i][column]=size; 
                     overlap += board[row+i][column];
